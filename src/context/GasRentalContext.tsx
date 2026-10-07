@@ -1,7 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { Motor, Penyewa, Sewa, RentStatus, UIStateMode, ActiveTab } from '../types';
-import { initialMotors, initialPenyewas, initialSewas } from '../lib/mockData';
 import { getTodayDateString } from '../lib/utils';
+import { motorService } from '../services/motorService';
+import { penyewaService } from '../services/penyewaService';
+import { sewaService } from '../services/sewaService';
+import { initialMotors, initialPenyewas } from '../lib/mockData';
 
 interface GasRentalContextType {
   // Navigation & UI State Mode
@@ -13,7 +16,7 @@ interface GasRentalContextType {
   isError: boolean;
   triggerRetry: () => void;
 
-  // Data Collections
+  // Data Collections (Live Firestore)
   motors: Motor[];
   penyewas: Penyewa[];
   sewas: Sewa[];
@@ -50,115 +53,136 @@ interface GasRentalContextType {
     ongoingRentals: Sewa[];
   };
 
-  // Reset helper
+  // Seed sample data to Firestore if empty
+  seedSampleData: () => Promise<void>;
   resetMockData: () => void;
 }
 
 const GasRentalContext = createContext<GasRentalContextType | undefined>(undefined);
 
-const STORAGE_KEY_MOTORS = 'gas_rental_motors';
-const STORAGE_KEY_PENYEWAS = 'gas_rental_penyewas';
-const STORAGE_KEY_SEWAS = 'gas_rental_sewas';
-
 export const GasRentalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>('dasbor');
   const [uiMode, setUiMode] = useState<UIStateMode>('normal');
-  const [isSimulatedLoading, setIsSimulatedLoading] = useState<boolean>(false);
+  const [isLoadingData, setIsLoadingData] = useState<boolean>(true);
+  const [isFetchError, setIsFetchError] = useState<boolean>(false);
   const [revenueDate, setRevenueDate] = useState<string>(getTodayDateString());
 
-  // Inisialisasi State dari localStorage jika ada, atau fallback ke initial mock data
-  const [motors, setMotors] = useState<Motor[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY_MOTORS);
-    return saved ? JSON.parse(saved) : initialMotors;
-  });
+  // Firestore Data States
+  const [motors, setMotors] = useState<Motor[]>([]);
+  const [penyewas, setPenyewas] = useState<Penyewa[]>([]);
+  const [sewas, setSewas] = useState<Sewa[]>([]);
 
-  const [penyewas, setPenyewas] = useState<Penyewa[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY_PENYEWAS);
-    return saved ? JSON.parse(saved) : initialPenyewas;
-  });
+  // Fetch all collections from Firestore
+  const fetchAllData = useCallback(async () => {
+    setIsLoadingData(true);
+    setIsFetchError(false);
+    try {
+      const [motorsData, penyewasData, sewasData] = await Promise.all([
+        motorService.getMotors(),
+        penyewaService.getPenyewas(),
+        sewaService.getSewas(),
+      ]);
 
-  const [sewas, setSewas] = useState<Sewa[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY_SEWAS);
-    return saved ? JSON.parse(saved) : initialSewas;
-  });
+      setMotors(motorsData);
+      setPenyewas(penyewasData);
+      setSewas(sewasData);
+    } catch (err) {
+      console.error('Error fetching Firestore collections:', err);
+      setIsFetchError(true);
+    } finally {
+      setIsLoadingData(false);
+    }
+  }, []);
 
-  // Sync to localStorage
+  // Initial load
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY_MOTORS, JSON.stringify(motors));
-  }, [motors]);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY_PENYEWAS, JSON.stringify(penyewas));
-  }, [penyewas]);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY_SEWAS, JSON.stringify(sewas));
-  }, [sewas]);
+    fetchAllData();
+  }, [fetchAllData]);
 
   const triggerRetry = () => {
-    setIsSimulatedLoading(true);
-    setTimeout(() => {
-      setIsSimulatedLoading(false);
-      setUiMode('normal');
-    }, 600);
+    fetchAllData();
+    setUiMode('normal');
+  };
+
+  // Helper to seed initial sample data into Firestore if database is freshly initialized
+  const seedSampleData = async () => {
+    setIsLoadingData(true);
+    try {
+      for (const m of initialMotors) {
+        await motorService.addMotor({
+          merek_tipe: m.merek_tipe,
+          plat_nomor: m.plat_nomor,
+          harga_per_hari: m.harga_per_hari,
+          tersedia: m.tersedia,
+        });
+      }
+      for (const p of initialPenyewas) {
+        await penyewaService.addPenyewa({
+          nama: p.nama,
+          no_whatsapp: p.no_whatsapp,
+          asal_kota: p.asal_kota,
+          jenis_jaminan: p.jenis_jaminan,
+        });
+      }
+      await fetchAllData();
+    } catch (err) {
+      console.error('Error seeding data:', err);
+    } finally {
+      setIsLoadingData(false);
+    }
   };
 
   const resetMockData = () => {
-    setMotors(initialMotors);
-    setPenyewas(initialPenyewas);
-    setSewas(initialSewas);
+    fetchAllData();
     setUiMode('normal');
-    localStorage.removeItem(STORAGE_KEY_MOTORS);
-    localStorage.removeItem(STORAGE_KEY_PENYEWAS);
-    localStorage.removeItem(STORAGE_KEY_SEWAS);
   };
 
-  // Motor Operations
+  // Motor Operations (Firestore)
   const addMotor = async (motorData: Omit<Motor, 'id' | 'dibuat_pada'>) => {
     if (!motorData.merek_tipe.trim()) return { success: false, message: 'Merek dan tipe motor wajib diisi' };
     if (!motorData.plat_nomor.trim()) return { success: false, message: 'Plat nomor wajib diisi' };
     if (motorData.harga_per_hari < 0) return { success: false, message: 'Harga per hari tidak boleh negatif' };
 
-    const newId = 'Mt' + Math.random().toString(36).substring(2, 7);
-    const newMotor: Motor = {
-      ...motorData,
-      plat_nomor: motorData.plat_nomor.trim().toUpperCase(),
-      id: newId,
-      dibuat_pada: new Date().toISOString(),
-    };
-    setMotors((prev) => [newMotor, ...prev]);
-    return { success: true };
+    try {
+      await motorService.addMotor(motorData);
+      await fetchAllData();
+      return { success: true };
+    } catch (err: any) {
+      console.error('Error adding motor:', err);
+      return { success: false, message: err.message || 'Gagal menyimpan data motor ke Firestore' };
+    }
   };
 
   const updateMotor = async (id: string, updateData: Partial<Omit<Motor, 'id' | 'dibuat_pada'>>) => {
     if (updateData.harga_per_hari !== undefined && updateData.harga_per_hari < 0) {
       return { success: false, message: 'Harga per hari tidak boleh negatif' };
     }
-    setMotors((prev) =>
-      prev.map((m) =>
-        m.id === id
-          ? {
-              ...m,
-              ...updateData,
-              plat_nomor: updateData.plat_nomor ? updateData.plat_nomor.trim().toUpperCase() : m.plat_nomor,
-            }
-          : m
-      )
-    );
-    return { success: true };
+    try {
+      await motorService.updateMotor(id, updateData);
+      await fetchAllData();
+      return { success: true };
+    } catch (err: any) {
+      console.error('Error updating motor:', err);
+      return { success: false, message: err.message || 'Gagal memperbarui data motor di Firestore' };
+    }
   };
 
   const deleteMotor = async (id: string) => {
-    // Cek apakah motor sedang dipakai di sewa berjalan
     const hasActiveSewa = sewas.some((s) => s.motor_id === id && (s.status === 'berjalan' || s.status === 'dipesan'));
     if (hasActiveSewa) {
       return { success: false, message: 'Motor tidak dapat dihapus karena masih terkait transaksi aktif' };
     }
-    setMotors((prev) => prev.filter((m) => m.id !== id));
-    return { success: true };
+    try {
+      await motorService.deleteMotor(id);
+      await fetchAllData();
+      return { success: true };
+    } catch (err: any) {
+      console.error('Error deleting motor:', err);
+      return { success: false, message: err.message || 'Gagal menghapus motor dari Firestore' };
+    }
   };
 
-  // Penyewa Operations
+  // Penyewa Operations (Firestore)
   const addPenyewa = async (penyewaData: Omit<Penyewa, 'id' | 'dibuat_pada'>) => {
     const cleanNoWa = penyewaData.no_whatsapp.trim();
     if (!cleanNoWa.startsWith('08') || cleanNoWa.length < 10 || cleanNoWa.length > 13 || !/^\d+$/.test(cleanNoWa)) {
@@ -167,27 +191,25 @@ export const GasRentalProvider: React.FC<{ children: ReactNode }> = ({ children 
     if (!penyewaData.nama.trim()) return { success: false, message: 'Nama penyewa wajib diisi' };
     if (!penyewaData.asal_kota.trim()) return { success: false, message: 'Asal kota wajib diisi' };
 
-    // Validasi: getDoc lalu setDoc -> Cek apakah no_whatsapp sudah ada
-    const exists = penyewas.some((p) => p.no_whatsapp === cleanNoWa);
-    if (exists) {
-      return { success: false, message: 'Nomor WhatsApp sudah terdaftar' };
+    try {
+      await penyewaService.addPenyewa(penyewaData);
+      await fetchAllData();
+      return { success: true };
+    } catch (err: any) {
+      console.error('Error adding penyewa:', err);
+      return { success: false, message: err.message || 'Gagal menyimpan data penyewa' };
     }
-
-    const newPenyewa: Penyewa = {
-      ...penyewaData,
-      id: cleanNoWa,
-      no_whatsapp: cleanNoWa,
-      dibuat_pada: new Date().toISOString(),
-    };
-    setPenyewas((prev) => [newPenyewa, ...prev]);
-    return { success: true };
   };
 
   const updatePenyewa = async (id: string, updateData: Partial<Omit<Penyewa, 'id' | 'dibuat_pada'>>) => {
-    setPenyewas((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, ...updateData } : p))
-    );
-    return { success: true };
+    try {
+      await penyewaService.updatePenyewa(id, updateData);
+      await fetchAllData();
+      return { success: true };
+    } catch (err: any) {
+      console.error('Error updating penyewa:', err);
+      return { success: false, message: err.message || 'Gagal memperbarui data penyewa di Firestore' };
+    }
   };
 
   const deletePenyewa = async (id: string) => {
@@ -195,11 +217,17 @@ export const GasRentalProvider: React.FC<{ children: ReactNode }> = ({ children 
     if (hasActiveSewa) {
       return { success: false, message: 'Penyewa tidak dapat dihapus karena masih memiliki sewa aktif' };
     }
-    setPenyewas((prev) => prev.filter((p) => p.id !== id));
-    return { success: true };
+    try {
+      await penyewaService.deletePenyewa(id);
+      await fetchAllData();
+      return { success: true };
+    } catch (err: any) {
+      console.error('Error deleting penyewa:', err);
+      return { success: false, message: err.message || 'Gagal menghapus penyewa dari Firestore' };
+    }
   };
 
-  // Sewa Operations
+  // Sewa Operations (Firestore)
   const addSewa = async ({
     motor_id,
     penyewa_id,
@@ -221,26 +249,23 @@ export const GasRentalProvider: React.FC<{ children: ReactNode }> = ({ children 
     const penyewa = penyewas.find((p) => p.id === penyewa_id);
     if (!penyewa) return { success: false, message: 'Penyewa tidak ditemukan' };
 
-    const total = motor.harga_per_hari * lama_hari;
-    const newId = 'Sw' + Math.random().toString(36).substring(2, 7);
-
-    const newSewa: Sewa = {
-      id: newId,
-      motor_id: motor.id,
-      nama_motor: motor.merek_tipe,
-      plat_nomor: motor.plat_nomor,
-      penyewa_id: penyewa.id,
-      nama_penyewa: penyewa.nama,
-      harga_per_hari: motor.harga_per_hari,
-      tanggal_mulai,
-      lama_hari,
-      total,
-      status: 'dipesan',
-      dibuat_pada: new Date().toISOString(),
-    };
-
-    setSewas((prev) => [newSewa, ...prev]);
-    return { success: true };
+    try {
+      await sewaService.addSewa({
+        motor_id: motor.id,
+        nama_motor: motor.merek_tipe,
+        plat_nomor: motor.plat_nomor,
+        penyewa_id: penyewa.id,
+        nama_penyewa: penyewa.nama,
+        harga_per_hari: motor.harga_per_hari,
+        tanggal_mulai,
+        lama_hari,
+      });
+      await fetchAllData();
+      return { success: true };
+    } catch (err: any) {
+      console.error('Error creating sewa:', err);
+      return { success: false, message: err.message || 'Gagal membuat transaksi sewa di Firestore' };
+    }
   };
 
   const updateSewaStatus = async (sewaId: string, nextStatus: RentStatus) => {
@@ -262,30 +287,25 @@ export const GasRentalProvider: React.FC<{ children: ReactNode }> = ({ children 
       return { success: false, message: 'Status transaksi yang sudah selesai atau dibatalkan tidak dapat diubah lagi' };
     }
 
-    // Update status sewa
-    setSewas((prev) =>
-      prev.map((s) => (s.id === sewaId ? { ...s, status: nextStatus } : s))
-    );
-
-    // Otomasi Ketersediaan Motor (Skema Bagian 5 & PRD)
-    if (nextStatus === 'berjalan') {
-      // Motor sedang disewa -> tidak tersedia
-      setMotors((prev) =>
-        prev.map((m) => (m.id === sewa.motor_id ? { ...m, tersedia: false } : m))
-      );
-    } else if (nextStatus === 'selesai' || nextStatus === 'dibatalkan') {
-      // Motor kembali / batal -> tersedia kembali
-      setMotors((prev) =>
-        prev.map((m) => (m.id === sewa.motor_id ? { ...m, tersedia: true } : m))
-      );
+    try {
+      await sewaService.updateSewaStatus(sewaId, sewa.motor_id, nextStatus);
+      await fetchAllData();
+      return { success: true };
+    } catch (err: any) {
+      console.error('Error updating status sewa:', err);
+      return { success: false, message: err.message || 'Gagal mengubah status sewa di Firestore' };
     }
-
-    return { success: true };
   };
 
   const deleteSewa = async (id: string) => {
-    setSewas((prev) => prev.filter((s) => s.id !== id));
-    return { success: true };
+    try {
+      await sewaService.deleteSewa(id);
+      await fetchAllData();
+      return { success: true };
+    } catch (err: any) {
+      console.error('Error deleting sewa:', err);
+      return { success: false, message: err.message || 'Gagal menghapus sewa dari Firestore' };
+    }
   };
 
   // Dasbor calculations
@@ -296,7 +316,6 @@ export const GasRentalProvider: React.FC<{ children: ReactNode }> = ({ children 
     const ongoingRentals = sewas.filter((s) => s.status === 'berjalan');
     const sewaBerjalanCount = ongoingRentals.length;
 
-    // Pendapatan dihitung dari sewa berstatus selesai yang dimulai pada tanggal terpilih (PRD 5.4)
     const totalPendapatanHari = sewas
       .filter((s) => s.status === 'selesai' && s.tanggal_mulai === revenueDate)
       .reduce((acc, curr) => acc + curr.total, 0);
@@ -311,8 +330,8 @@ export const GasRentalProvider: React.FC<{ children: ReactNode }> = ({ children 
     };
   };
 
-  const isLoading = uiMode === 'loading' || isSimulatedLoading;
-  const isError = uiMode === 'error';
+  const isLoading = uiMode === 'loading' || isLoadingData;
+  const isError = uiMode === 'error' || isFetchError;
 
   return (
     <GasRentalContext.Provider
@@ -339,6 +358,7 @@ export const GasRentalProvider: React.FC<{ children: ReactNode }> = ({ children 
         revenueDate,
         setRevenueDate,
         getDashboardStats,
+        seedSampleData,
         resetMockData,
       }}
     >

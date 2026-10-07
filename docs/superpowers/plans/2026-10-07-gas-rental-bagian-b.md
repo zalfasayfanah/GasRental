@@ -37,17 +37,17 @@
 ### Task 1: Pemasangan Firebase SDK & Konfigurasi Lingkungan (`.env` & `firebase.ts`)
 
 **Files:**
-- Create: `.env`, `src/lib/firebase.ts`
+- Create: `.env`, `src/lib/firebase.ts`, `src/vite-env.d.ts`
 - Modify: `package.json`
 
 **Interfaces:**
 - Produces: Inisialisasi instance `db` (Firestore) dan `app` (FirebaseApp) siap pakai.
 
-- [ ] **Step 1: Install dependency `firebase` menggunakan npm**
-- [ ] **Step 2: Buat file `.env` berisi `VITE_FIREBASE_*` dari `firebaseConfig` pengguna**
-- [ ] **Step 3: Buat `src/lib/firebase.ts` untuk menginisialisasi Firebase App dan Cloud Firestore (`getFirestore`)**
-- [ ] **Step 4: Verifikasi build & koneksi instance Firebase**
-- [ ] **Step 5: Commit:** `git commit -m "feat: install firebase sdk and setup firestore initialization"`
+- [x] **Step 1: Install dependency `firebase` menggunakan npm**
+- [x] **Step 2: Buat file `.env` berisi `VITE_FIREBASE_*` dari `firebaseConfig` pengguna**
+- [x] **Step 3: Buat `src/lib/firebase.ts` untuk menginisialisasi Firebase App dan Cloud Firestore (`getFirestore`)**
+- [x] **Step 4: Verifikasi build & koneksi instance Firebase**
+- [x] **Step 5: Commit:** `git commit -m "feat: install firebase sdk and setup firestore initialization"`
 
 ---
 
@@ -60,28 +60,28 @@
 - Consumes: `db` dari `src/lib/firebase.ts`, types dari `src/types/index.ts`
 - Produces: Fungsi async modular CRUD untuk masing-masing koleksi Firestore (`getMotors`, `addMotor`, `updateMotor`, `deleteMotor`, `getPenyewas`, `addPenyewa`, `getSewas`, `addSewa`, `updateSewaStatus`, `deleteSewa`).
 
-- [ ] **Step 1: Implementasikan `src/services/motorService.ts` (`addDoc`, `getDocs`, `updateDoc`, `deleteDoc`, `orderBy("merek_tipe")`, `limit(20)`)**
-- [ ] **Step 2: Implementasikan `src/services/penyewaService.ts` (`getDoc` untuk cek duplikat nomor WA, `setDoc` dengan doc ID no_whatsapp, `getDocs`, `updateDoc`, `deleteDoc`)**
-- [ ] **Step 3: Implementasikan `src/services/sewaService.ts` (`addDoc` dengan snapshot field & `serverTimestamp()`, `getDocs` orderBy `dibuat_pada desc`, `updateDoc` untuk status sewa sekaligus sinkronisasi status `tersedia` pada dokumen `motor`)**
-- [ ] **Step 4: Commit:** `git commit -m "feat: implement modular firestore services for motor, penyewa, and sewa"`
+- [x] **Step 1: Implementasikan `src/services/motorService.ts` (`addDoc`, `getDocs`, `updateDoc`, `deleteDoc`, `orderBy("merek_tipe")`, `limit(20)`)**
+- [x] **Step 2: Implementasikan `src/services/penyewaService.ts` (`getDoc` untuk cek duplikat nomor WA, `setDoc` dengan doc ID no_whatsapp, `getDocs`, `updateDoc`, `deleteDoc`)**
+- [x] **Step 3: Implementasikan `src/services/sewaService.ts` (`addDoc` dengan snapshot field & `serverTimestamp()`, `getDocs` orderBy `dibuat_pada desc`, `updateDoc` untuk status sewa sekaligus sinkronisasi status `tersedia` pada dokumen `motor`)**
+- [x] **Step 4: Commit:** `git commit -m "feat: implement modular firestore services for motor, penyewa, and sewa"`
 
 ---
 
 ### Task 3: Integrasi State Context dengan Cloud Firestore Asli
 
 **Files:**
-- Modify: `src/context/GasRentalContext.tsx`
+- Modify: `src/context/GasRentalContext.tsx`, `src/components/common/DevSimulatorBar.tsx`
 
 **Interfaces:**
 - Consumes: `motorService`, `penyewaService`, `sewaService`
 - Produces: Aplikasi membaca dan menulis data langsung ke Cloud Firestore dengan penanganan loading nyata, error handling, dan query dasbor Firestore.
 
-- [ ] **Step 1: Hubungkan `useEffect` pemanggilan data awal dari Firestore saat aplikasi dibuka**
-- [ ] **Step 2: Hubungkan operasi tambah, edit, hapus Motor ke Firestore**
-- [ ] **Step 3: Hubungkan operasi tambah, edit, hapus Penyewa ke Firestore**
-- [ ] **Step 4: Hubungkan operasi tambah sewa & perubahan status sewa ke Firestore**
-- [ ] **Step 5: Hubungkan kalkulasi dasbor (motor tersedia/disewa, sewa berjalan, omzet selesai) dengan query Firestore**
-- [ ] **Step 6: Commit:** `git commit -m "feat: connect app state context to live cloud firestore"`
+- [x] **Step 1: Hubungkan `useEffect` pemanggilan data awal dari Firestore saat aplikasi dibuka**
+- [x] **Step 2: Hubungkan operasi tambah, edit, hapus Motor ke Firestore**
+- [x] **Step 3: Hubungkan operasi tambah, edit, hapus Penyewa ke Firestore**
+- [x] **Step 4: Hubungkan operasi tambah sewa & perubahan status sewa ke Firestore**
+- [x] **Step 5: Hubungkan kalkulasi dasbor (motor tersedia/disewa, sewa berjalan, omzet selesai) dengan query Firestore**
+- [x] **Step 6: Commit:** `git commit -m "feat: connect app state context to live cloud firestore"`
 
 ---
 
@@ -93,11 +93,11 @@
 **Interfaces:**
 - Produces: Berkas keamanan Firestore yang menegakkan aturan validasi schema, tipe data, dan alur status transaksi di level basis data.
 
-- [ ] **Step 1: Tulis aturan untuk koleksi `motor` (validasi merek_tipe <= 40 char, plat_nomor 3-12 char, harga_per_hari >= 0, tersedia boolean)**
-- [ ] **Step 2: Tulis aturan untuk koleksi `penyewa` (nama & asal_kota terisi, ID dokumen sama dengan no_whatsapp dan diawali 08, jenis_jaminan hanya KTP/SIM/Paspor)**
-- [ ] **Step 3: Tulis aturan untuk koleksi `sewa` (lama_hari 1-30, harga & total sesuai rumus, status awal dipesan, alur transisi status sewa)**
-- [ ] **Step 4: Siapkan panduan deploy rules ke Firebase Console / Firebase CLI**
-- [ ] **Step 5: Commit:** `git commit -m "feat: add comprehensive firestore security rules"`
+- [x] **Step 1: Tulis aturan untuk koleksi `motor` (validasi merek_tipe <= 40 char, plat_nomor 3-12 char, harga_per_hari >= 0, tersedia boolean)**
+- [x] **Step 2: Tulis aturan untuk koleksi `penyewa` (nama & asal_kota terisi, ID dokumen sama dengan no_whatsapp dan diawali 08, jenis_jaminan hanya KTP/SIM/Paspor)**
+- [x] **Step 3: Tulis aturan untuk koleksi `sewa` (lama_hari 1-30, harga & total sesuai rumus, status awal dipesan, alur transisi status sewa)**
+- [x] **Step 4: Siapkan panduan deploy rules ke Firebase Console / Firebase CLI**
+- [x] **Step 5: Commit:** `git commit -m "feat: add comprehensive firestore security rules"`
 
 ---
 
@@ -106,8 +106,8 @@
 **Files:**
 - Create/Modify: `netlify.toml`, `README.md`
 
-- [ ] **Step 1: Jalankan unit test (`npm run test`) untuk memastikan aturan data tetap valid**
-- [ ] **Step 2: Jalankan build produksi (`npm run build`) dan pastikan tidak ada error TypeScript atau Vite**
-- [ ] **Step 3: Verifikasi konfigurasi `netlify.toml` untuk rewrite SPA**
-- [ ] **Step 4: Susun panduan langkah deploy ke Netlify di `README.md`**
-- [ ] **Step 5: Commit:** `git commit -m "chore: finalize build verification and netlify deployment configuration"`
+- [x] **Step 1: Jalankan unit test (`npm run test`) untuk memastikan aturan data tetap valid**
+- [x] **Step 2: Jalankan build produksi (`npm run build`) dan pastikan tidak ada error TypeScript atau Vite**
+- [x] **Step 3: Verifikasi konfigurasi `netlify.toml` untuk rewrite SPA**
+- [x] **Step 4: Susun panduan langkah deploy ke Netlify di `README.md`**
+- [x] **Step 5: Commit:** `git commit -m "chore: finalize build verification and netlify deployment configuration"`

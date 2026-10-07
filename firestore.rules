@@ -1,0 +1,77 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ==========================================
+    // 1. ATURAN KOLEKSI MOTOR (Master Unit)
+    // ==========================================
+    match /motor/{motorId} {
+      allow read: if true;
+
+      allow create: if request.resource.data.merek_tipe is string
+                    && request.resource.data.merek_tipe.size() >= 1
+                    && request.resource.data.merek_tipe.size() <= 40
+                    && request.resource.data.plat_nomor is string
+                    && request.resource.data.plat_nomor.size() >= 3
+                    && request.resource.data.plat_nomor.size() <= 12
+                    && request.resource.data.harga_per_hari is number
+                    && request.resource.data.harga_per_hari >= 0
+                    && request.resource.data.tersedia is bool;
+
+      allow update: if (request.resource.data.merek_tipe is string && request.resource.data.merek_tipe.size() >= 1 && request.resource.data.merek_tipe.size() <= 40)
+                    && (request.resource.data.plat_nomor is string && request.resource.data.plat_nomor.size() >= 3 && request.resource.data.plat_nomor.size() <= 12)
+                    && (request.resource.data.harga_per_hari is number && request.resource.data.harga_per_hari >= 0)
+                    && (request.resource.data.tersedia is bool);
+
+      allow delete: if true;
+    }
+
+    // ==========================================
+    // 2. ATURAN KOLEKSI PENYEWA (Master Orang)
+    // ==========================================
+    match /penyewa/{noWhatsapp} {
+      allow read: if true;
+
+      allow create: if request.resource.data.nama is string
+                    && request.resource.data.nama.size() >= 1
+                    && request.resource.data.nama.size() <= 60
+                    && request.resource.data.no_whatsapp == noWhatsapp
+                    && request.resource.data.no_whatsapp.matches('^08[0-9]{8,11}$')
+                    && request.resource.data.asal_kota is string
+                    && request.resource.data.asal_kota.size() >= 1
+                    && request.resource.data.asal_kota.size() <= 40
+                    && request.resource.data.jenis_jaminan in ['KTP', 'SIM', 'Paspor'];
+
+      allow update: if request.resource.data.nama is string
+                    && request.resource.data.nama.size() >= 1
+                    && request.resource.data.asal_kota is string
+                    && request.resource.data.asal_kota.size() >= 1
+                    && request.resource.data.jenis_jaminan in ['KTP', 'SIM', 'Paspor'];
+
+      allow delete: if true;
+    }
+
+    // ==========================================
+    // 3. ATURAN KOLEKSI SEWA (Transaksi)
+    // ==========================================
+    match /sewa/{sewaId} {
+      allow read: if true;
+
+      allow create: if request.resource.data.motor_id is string
+                    && request.resource.data.penyewa_id is string
+                    && request.resource.data.lama_hari is number
+                    && request.resource.data.lama_hari >= 1
+                    && request.resource.data.lama_hari <= 30
+                    && request.resource.data.harga_per_hari is number
+                    && request.resource.data.harga_per_hari >= 0
+                    && request.resource.data.total == request.resource.data.harga_per_hari * request.resource.data.lama_hari
+                    && request.resource.data.status == 'dipesan';
+
+      allow update: if (resource.data.status == 'dipesan' && (request.resource.data.status == 'berjalan' || request.resource.data.status == 'dibatalkan'))
+                    || (resource.data.status == 'berjalan' && request.resource.data.status == 'selesai');
+
+      allow delete: if true;
+    }
+  }
+}
