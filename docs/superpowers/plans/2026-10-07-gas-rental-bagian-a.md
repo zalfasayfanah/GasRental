@@ -43,12 +43,12 @@
 **Interfaces:**
 - Produces: Lingkungan build Vite + React + TypeScript + Tailwind CSS siap pakai.
 
-- [ ] **Step 1: Inisialisasi Vite + React + TypeScript project**
-- [ ] **Step 2: Install dependencies (Tailwind CSS, clsx, tailwind-merge, lucide-react, radix-ui primitives)**
-- [ ] **Step 3: Setup `tailwind.config.js` & `src/index.css` dengan design tokens warna, radius, dan font inter**
-- [ ] **Step 4: Buat `.env.example` dan `netlify.toml`**
-- [ ] **Step 5: Verifikasi build & dev server berjalan tanpa error (`npm run build`)**
-- [ ] **Step 6: Commit:** `git commit -m "feat: initialize vite react ts project with tailwind css"`
+- [x] **Step 1: Inisialisasi Vite + React + TypeScript project**
+- [x] **Step 2: Install dependencies (Tailwind CSS, clsx, tailwind-merge, lucide-react, radix-ui primitives)**
+- [x] **Step 3: Setup `tailwind.config.js` & `src/index.css` dengan design tokens warna, radius, dan font inter**
+- [x] **Step 4: Buat `.env.example` dan `netlify.toml`**
+- [x] **Step 5: Verifikasi build & dev server berjalan tanpa error (`npm run build`)**
+- [x] **Step 6: Commit:** `git commit -m "feat: initialize vite react ts project with tailwind css"`
 
 ---
 
@@ -60,11 +60,11 @@
 **Interfaces:**
 - Produces: `Motor`, `Penyewa`, `Sewa`, `RentStatus`, `JenisJaminan`, helper `formatRupiah`, `formatDate`, dan React Context / Hook `useGasRental()` untuk mengelola CRUD in-memory + simulasi delay & error states.
 
-- [ ] **Step 1: Tulis interface TypeScript di `src/types/index.ts` sesuai Skema Firestore**
-- [ ] **Step 2: Tulis data awal contoh di `src/lib/mockData.ts` (sesuai contoh dokumen PRD & Skema)**
-- [ ] **Step 3: Implementasikan utility formatter di `src/lib/utils.ts` (`formatRupiah`, `formatDate`)**
-- [ ] **Step 4: Implementasikan `GasRentalContext.tsx` dengan fungsi CRUD (add, update, delete, updateSewaStatus) dan state simulator (loading, error, empty, normal)**
-- [ ] **Step 5: Commit:** `git commit -m "feat: add schema types, mock data, and state manager context"`
+- [x] **Step 1: Tulis interface TypeScript di `src/types/index.ts` sesuai Skema Firestore**
+- [x] **Step 2: Tulis data awal contoh di `src/lib/mockData.ts` (sesuai contoh dokumen PRD & Skema)**
+- [x] **Step 3: Implementasikan utility formatter di `src/lib/utils.ts` (`formatRupiah`, `formatDate`)**
+- [x] **Step 4: Implementasikan `GasRentalContext.tsx` dengan fungsi CRUD (add, update, delete, updateSewaStatus) dan state simulator (loading, error, empty, normal)**
+- [x] **Step 5: Commit:** `git commit -m "feat: add schema types, mock data, and state manager context"`
 
 ---
 
@@ -77,13 +77,13 @@
 - Consumes: `useGasRental()`
 - Produces: Komponen navigasi responsif & komponen standar feedback state yang dapat digunakan di semua modul.
 
-- [ ] **Step 1: Buat komponen `SkeletonLoader.tsx` untuk kartu dan daftar**
-- [ ] **Step 2: Buat komponen `EmptyState.tsx` dengan ikon, judul, deskripsi, dan tombol aksi**
-- [ ] **Step 3: Buat komponen `ErrorState.tsx` dengan pesan informatif dan tombol "Coba Lagi"**
-- [ ] **Step 4: Buat komponen `ConfirmDialog.tsx` modal konfirmasi aksi berbahaya (Hapus / Batal)**
-- [ ] **Step 5: Buat `Navbar.tsx`, `BottomNav.tsx`, dan `AppLayout.tsx` dengan 4 menu utama: Dasbor, Motor, Penyewa, Sewa**
-- [ ] **Step 6: Buat `DevSimulatorBar.tsx` (bar pengontrol simulasi state: normal/loading/error/empty)**
-- [ ] **Step 7: Commit:** `git commit -m "feat: add layout, navigation, and reusable feedback state components"`
+- [x] **Step 1: Buat komponen `SkeletonLoader.tsx` untuk kartu dan daftar**
+- [x] **Step 2: Buat komponen `EmptyState.tsx` dengan ikon, judul, deskripsi, dan tombol aksi**
+- [x] **Step 3: Buat komponen `ErrorState.tsx` dengan pesan informatif dan tombol "Coba Lagi"**
+- [x] **Step 4: Buat komponen `ConfirmDialog.tsx` modal konfirmasi aksi berbahaya (Hapus / Batal)**
+- [x] **Step 5: Buat `Navbar.tsx`, `BottomNav.tsx`, dan `AppLayout.tsx` dengan 4 menu utama: Dasbor, Motor, Penyewa, Sewa**
+- [x] **Step 6: Buat `DevSimulatorBar.tsx` (bar pengontrol simulasi state: normal/loading/error/empty)**
+- [x] **Step 7: Commit:** `git commit -m "feat: add layout, navigation, and reusable feedback state components"`
 
 ---
 
@@ -96,11 +96,11 @@
 - Consumes: `useGasRental()`, `Motor`, `ConfirmDialog`, `EmptyState`, `ErrorState`, `SkeletonLoader`
 - Produces: Halaman manajemen motor lengkap dengan badge status ketersediaan, form tambah/edit, dan dialog konfirmasi hapus.
 
-- [ ] **Step 1: Buat `MotorCard.tsx` dengan visual unit, plat nomor, harga sewa per hari, badge ketersediaan (Tersedia / Disewa), tombol Edit & Hapus**
-- [ ] **Step 2: Buat `MotorFormDialog.tsx` dengan validasi: Merek & tipe (1-40 char), Plat nomor (3-12 char uppercase), Harga per hari ($\ge 0$), Toggle ketersediaan**
-- [ ] **Step 3: Buat `MotorPage.tsx` yang menggabungkan daftar motor, integrasi 3 state, modal tambah/edit, dan dialog hapus**
-- [ ] **Step 4: Verifikasi fungsionalitas CRUD motor dan visual feedback di browser**
-- [ ] **Step 5: Commit:** `git commit -m "feat: implement motor master module with full CRUD and state handling"`
+- [x] **Step 1: Buat `MotorCard.tsx` dengan visual unit, plat nomor, harga sewa per hari, badge ketersediaan (Tersedia / Disewa), tombol Edit & Hapus**
+- [x] **Step 2: Buat `MotorFormDialog.tsx` dengan validasi: Merek & tipe (1-40 char), Plat nomor (3-12 char uppercase), Harga per hari ($\ge 0$), Toggle ketersediaan**
+- [x] **Step 3: Buat `MotorPage.tsx` yang menggabungkan daftar motor, integrasi 3 state, modal tambah/edit, dan dialog hapus**
+- [x] **Step 4: Verifikasi fungsionalitas CRUD motor dan visual feedback di browser**
+- [x] **Step 5: Commit:** `git commit -m "feat: implement motor master module with full CRUD and state handling"`
 
 ---
 
@@ -113,12 +113,12 @@
 - Consumes: `useGasRental()`, `Penyewa`, `ConfirmDialog`, `EmptyState`, `ErrorState`, `SkeletonLoader`
 - Produces: Halaman manajemen penyewa dengan pencarian instan (nama / no WA), form tambah/edit dengan pencegahan No WA duplikat, dan dialog hapus.
 
-- [ ] **Step 1: Buat `PenyewaSearch.tsx` untuk filter pencarian berdasarkan nama dan nomor WhatsApp**
-- [ ] **Step 2: Buat `PenyewaCard.tsx` dengan nama penyewa, nomor WhatsApp, kota asal, dan badge jenis jaminan (KTP / SIM / Paspor)**
-- [ ] **Step 3: Buat `PenyewaFormDialog.tsx` dengan validasi: Nama (1-60 char), No WhatsApp (`08...`, 10-13 digit), Kota (1-40 char), Select jenis jaminan (`KTP` | `SIM` | `Paspor`), dan pengecekan duplikasi No WhatsApp saat tambah baru**
-- [ ] **Step 4: Buat `PenyewaPage.tsx` yang menyatukan pencarian, daftar, integrasi 3 state, tambah/edit, dan dialog hapus**
-- [ ] **Step 5: Verifikasi fungsionalitas pencarian dan CRUD penyewa**
-- [ ] **Step 6: Commit:** `git commit -m "feat: implement penyewa master module with search and CRUD"`
+- [x] **Step 1: Buat `PenyewaSearch.tsx` untuk filter pencarian berdasarkan nama dan nomor WhatsApp**
+- [x] **Step 2: Buat `PenyewaCard.tsx` dengan nama penyewa, nomor WhatsApp, kota asal, dan badge jenis jaminan (KTP / SIM / Paspor)**
+- [x] **Step 3: Buat `PenyewaFormDialog.tsx` dengan validasi: Nama (1-60 char), No WhatsApp (`08...`, 10-13 digit), Kota (1-40 char), Select jenis jaminan (`KTP` | `SIM` | `Paspor`), dan pengecekan duplikasi No WhatsApp saat tambah baru**
+- [x] **Step 4: Buat `PenyewaPage.tsx` yang menyatukan pencarian, daftar, integrasi 3 state, tambah/edit, dan dialog hapus**
+- [x] **Step 5: Verifikasi fungsionalitas pencarian dan CRUD penyewa**
+- [x] **Step 6: Commit:** `git commit -m "feat: implement penyewa master module with search and CRUD"`
 
 ---
 
@@ -131,14 +131,14 @@
 - Consumes: `useGasRental()`, `Sewa`, `Motor`, `Penyewa`, `ConfirmDialog`, `EmptyState`, `ErrorState`, `SkeletonLoader`
 - Produces: Halaman transaksi sewa dengan tabs filter status, form sewa baru dengan kalkulasi total otomatis, dan tombol aksi transisi status (`dipesan` $\rightarrow$ `berjalan` $\rightarrow$ `selesai` / `dibatalkan`).
 
-- [ ] **Step 1: Buat `SewaStatusBadge.tsx` dengan styling warna berbeda per status (`dipesan`, `berjalan`, `selesai`, `dibatalkan`)**
-- [ ] **Step 2: Buat `SewaFormDialog.tsx`: dropdown pilih motor (hanya yang tersedia), dropdown pilih penyewa, pemilih tanggal mulai, input lama hari (1-30), preview otomatis total biaya**
-- [ ] **Step 3: Buat `SewaCard.tsx` dengan rincian transaksi lengkap dan tombol aksi transisi:**
+- [x] **Step 1: Buat `SewaStatusBadge.tsx` dengan styling warna berbeda per status (`dipesan`, `berjalan`, `selesai`, `dibatalkan`)**
+- [x] **Step 2: Buat `SewaFormDialog.tsx`: dropdown pilih motor (hanya yang tersedia), dropdown pilih penyewa, pemilih tanggal mulai, input lama hari (1-30), preview otomatis total biaya**
+- [x] **Step 3: Buat `SewaCard.tsx` dengan rincian transaksi lengkap dan tombol aksi transisi:**
   - Jika `dipesan`: Tombol "Serahkan Motor" (ubah ke `berjalan`) dan "Batalkan" (ubah ke `dibatalkan` dengan konfirmasi)
   - Jika `berjalan`: Tombol "Selesaikan Sewa" (ubah ke `selesai` dengan konfirmasi)
-- [ ] **Step 4: Buat `SewaPage.tsx` dengan filter Tabs (`Semua`, `Dipesan`, `Berjalan`, `Selesai`, `Dibatalkan`), integrasi 3 state, dan tombol Sewa Baru**
-- [ ] **Step 5: Verifikasi otomasi ketersediaan motor saat status sewa berubah**
-- [ ] **Step 6: Commit:** `git commit -m "feat: implement sewa transaction module with status transitions"`
+- [x] **Step 4: Buat `SewaPage.tsx` dengan filter Tabs (`Semua`, `Dipesan`, `Berjalan`, `Selesai`, `Dibatalkan`), integrasi 3 state, dan tombol Sewa Baru**
+- [x] **Step 5: Verifikasi otomasi ketersediaan motor saat status sewa berubah**
+- [x] **Step 6: Commit:** `git commit -m "feat: implement sewa transaction module with status transitions"`
 
 ---
 
@@ -151,11 +151,11 @@
 - Consumes: `useGasRental()`, `StatCard`, `SkeletonLoader`, `EmptyState`, `ErrorState`
 - Produces: Halaman dasbor dengan ringkasan armada (tersedia vs disewa), daftar sewa yang sedang aktif berjalan, dan filter pendapatan harian dari transaksi selesai.
 
-- [ ] **Step 1: Buat komponen `StatCard.tsx` dengan angka highlight, label, dan ikon relevan**
-- [ ] **Step 2: Buat `OngoingRentalsSection.tsx` menampilkan daftar unit yang sedang disewa beserta kontak penyewa**
-- [ ] **Step 3: Buat `RevenueSection.tsx` dengan input pemilih tanggal (`YYYY-MM-DD`) dan perhitungan total omzet dari sewa berstatus `selesai` pada tanggal tersebut**
-- [ ] **Step 4: Buat `DasborPage.tsx` dengan integrasi 3 state (skeleton loading saat filter tanggal berubah)**
-- [ ] **Step 5: Commit:** `git commit -m "feat: implement dashboard module with stats, ongoing rentals, and revenue calculation"`
+- [x] **Step 1: Buat komponen `StatCard.tsx` dengan angka highlight, label, dan ikon relevan**
+- [x] **Step 2: Buat `OngoingRentalsSection.tsx` menampilkan daftar unit yang sedang disewa beserta kontak penyewa**
+- [x] **Step 3: Buat `RevenueSection.tsx` dengan input pemilih tanggal (`YYYY-MM-DD`) dan perhitungan total omzet dari sewa berstatus `selesai` pada tanggal tersebut**
+- [x] **Step 4: Buat `DasborPage.tsx` dengan integrasi 3 state (skeleton loading saat filter tanggal berubah)**
+- [x] **Step 5: Commit:** `git commit -m "feat: implement dashboard module with stats, ongoing rentals, and revenue calculation"`
 
 ---
 
@@ -164,12 +164,12 @@
 **Files:**
 - Modify: `src/App.tsx`, `src/index.css`
 
-- [ ] **Step 1: Satukan semua modul di `App.tsx` dengan navigasi aktif dan state manager**
-- [ ] **Step 2: Uji coba responsivitas tampilan mobile (< 640px) dan desktop**
-- [ ] **Step 3: Uji mandiri simulasi 3 state (Normal, Loading, Empty, Error dengan Retry)**
-- [ ] **Step 4: Uji mandiri acceptance criteria:**
+- [x] **Step 1: Satukan semua modul di `App.tsx` dengan navigasi aktif dan state manager**
+- [x] **Step 2: Uji coba responsivitas tampilan mobile (< 640px) dan desktop**
+- [x] **Step 3: Uji mandiri simulasi 3 state (Normal, Loading, Empty, Error dengan Retry)**
+- [x] **Step 4: Uji mandiri acceptance criteria:**
   - Tambah motor baru $\rightarrow$ muncul di daftar dan bisa dipilih di form sewa
   - Tambah penyewa $\rightarrow$ No WA duplikat ditolak
   - Buat sewa baru $\rightarrow$ total dihitung otomatis, motor jadi tersewa saat diserahkan
   - Selesaikan sewa $\rightarrow$ motor kembali tersedia, pendapatan dasbor terakumulasi
-- [ ] **Step 5: Commit:** `git commit -m "feat: complete and verify Part A UI with mock data and feedback states"`
+- [x] **Step 5: Commit:** `git commit -m "feat: complete and verify Part A UI with mock data and feedback states"`
